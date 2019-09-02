@@ -133,6 +133,9 @@ namespace G1TConverter
 
                 checkBoxExHeader.Checked = tex.UsesExtraHeader;
                 checkBoxNormalMap.Text = $"Normal map ({tex.NormalMapFlags:X})";
+                if (tex.NormalMapFlags != 3 || tex.NormalMapFlags != 0)
+                    MessageBox.Show("This specific texture has an irregular normal map flag.\nPlease communicate the entry ID to Raytwo or DeathChaos");
+
                 pictureBox1.Image = tex.Mipmap.GetBitmap();
 
                 numericUpDownMipMap.Enabled = true;
