@@ -11,8 +11,9 @@ namespace G1TConverter
 {
     public partial class Form1 : Form
     {
-        
 
+
+        ContextMenu g1tMenu = new ContextMenu();
         ContextMenu textureMenu = new ContextMenu();
 
         private G1T currentG1T;
@@ -34,14 +35,59 @@ namespace G1TConverter
 
         private void SetUpContextMenu()
         {
+            SetUpG1TMenu();
             SetUpTextureContextMenu();
+        }
+
+        private void SetUpG1TMenu()
+        {
+            MenuItem add = new MenuItem("Add");
+            add.Click += Add_Click;
+            g1tMenu.MenuItems.Add(add);
+        }
+
+        private void Add_Click(object sender, EventArgs e)
+        {
+            using (var opendialog = new OpenFileDialog())
+            {
+                opendialog.Filter =
+                    "DirectDraw Surface|*.dds";
+
+                opendialog.Multiselect = false; //For now at least, only one file at a time
+
+                if (opendialog.ShowDialog() == DialogResult.OK)
+                {
+                    DDS temp = new DDS();
+                    temp.Read(opendialog.FileName);
+
+                    if (temp.MipMapCount >= 10)
+                    {
+                        MessageBox.Show("The amount of mipmaps for this texture is too big. Reducing it to 9.");
+                        temp.MipMapCount = 9;
+                    }
+
+                    G1Texture texture = new G1Texture();
+                    texture.Replace(temp);
+                    textureListBox.Items.Add(texture);
+                    textureListBox.SelectedItem = texture;
+                }
+            }
+            
         }
 
         private void SetUpTextureContextMenu()
         {
             MenuItem replace = new MenuItem("Replace");
+            MenuItem remove = new MenuItem("Remove");
             replace.Click += Replace_Click;
+            remove.Click += Remove_Click;
             textureMenu.MenuItems.Add(replace);
+            textureMenu.MenuItems.Add(remove);
+        }
+
+        private void Remove_Click(object sender, EventArgs e)
+        {
+            textureListBox.Items.Remove(textureListBox.SelectedItem);
         }
 
         private void Replace_Click(object sender, EventArgs e)
@@ -57,6 +103,12 @@ namespace G1TConverter
                 {
                     DDS temp = new DDS();
                     temp.Read(opendialog.FileName);
+
+                    if(temp.MipMapCount >= 10)
+                    {
+                        MessageBox.Show("The amount of mipmaps for this texture is too big. Reducing it to 9.");
+                        temp.MipMapCount = 9;
+                    }
 
                     G1Texture texture = (G1Texture)textureListBox.SelectedItem;
                     texture.Replace(temp);
@@ -133,13 +185,17 @@ namespace G1TConverter
 
                 checkBoxExHeader.Checked = tex.UsesExtraHeader;
                 checkBoxNormalMap.Text = $"Normal map ({tex.NormalMapFlags:X})";
-                if (tex.NormalMapFlags != 3 || tex.NormalMapFlags != 0)
-                    MessageBox.Show("This specific texture has an irregular normal map flag.\nPlease communicate the entry ID to Raytwo or DeathChaos");
+                
 
                 pictureBox1.Image = tex.Mipmap.GetBitmap();
 
                 numericUpDownMipMap.Enabled = true;
                 checkBoxNormalMap.Enabled = true;
+            }
+            else
+            {
+                numericUpDownMipMap.Enabled = false;
+                checkBoxNormalMap.Enabled = false;
             }
         }
 
@@ -162,6 +218,7 @@ namespace G1TConverter
                 int indexitem = textureListBox.IndexFromPoint(e.X, e.Y);
                 if (indexitem == -1)
                 {
+                    g1tMenu.Show(this, new System.Drawing.Point(e.X, e.Y));
                 }
                 else if (textureListBox.Items[indexitem] is G1Texture)
                 {

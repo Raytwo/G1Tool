@@ -28,7 +28,7 @@ namespace G1TConverter.Formats
         /// <summary>
         /// Number of mipmap levels
         /// </summary>
-        public uint MipMapCount { get; private set; }
+        public uint MipMapCount { get; set; }
         public uint PixelFormat { get; private set; }
 
         public uint Caps { get; private set; }

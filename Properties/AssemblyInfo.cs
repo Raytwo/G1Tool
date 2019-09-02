@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("G1TConverter")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Simple editor for Koei Tecmo's G1T file format.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Raytwo")]
 [assembly: AssemblyProduct("G1TConverter")]
-[assembly: AssemblyCopyright("Taking over earth and still kicking in Uranus since 2019")]
+[assembly: AssemblyCopyright("Raytwo: Taking over earth and still kicking in Uranus since 2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.1.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
