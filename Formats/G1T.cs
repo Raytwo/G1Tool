@@ -108,8 +108,8 @@ namespace G1TConverter.Formats
             {
                 offsets.Add((uint)w.Position - (uint)offsettablepos);
 
-                //w.Write((byte)(texture.MipMapCount << 4));
-                w.Write((byte)(1 << 4)); //Until mipmap generation is added
+                w.Write((byte)(texture.MipMapCount << 4));
+                //w.Write((byte)(1 << 4)); //Until mipmap generation is added
 
                 if (texture.InternalFormat == InternalFormat.CompressedRgbS3tcDxt1Ext)
                     w.Write((byte)0x59);
@@ -133,11 +133,15 @@ namespace G1TConverter.Formats
 
                 texture.Mipmap.Bind();
 
-                int imageSize;
-                GL.GetTexLevelParameter(TextureTarget.Texture2D, 0, GetTextureParameter.TextureCompressedImageSize, out imageSize);
-                byte[] mipmap = new byte[imageSize];
-                GL.GetCompressedTexImage(TextureTarget.Texture2D, 0, mipmap);
-                w.Write(mipmap);
+                int level = 0;
+                for(level = 0; level < texture.MipMapCount; level++)
+                {
+                    int imageSize;
+                    GL.GetTexLevelParameter(TextureTarget.Texture2D, level, GetTextureParameter.TextureCompressedImageSize, out imageSize);
+                    byte[] mipmap = new byte[imageSize];
+                    GL.GetCompressedTexImage(TextureTarget.Texture2D, level, mipmap);
+                    w.Write(mipmap);
+                }
             }
 
             w.SeekBegin(filesizepos);
