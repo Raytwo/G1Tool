@@ -183,7 +183,7 @@ namespace G1TConverter.Formats
                 }
             }
         }
-        public byte MipMapCount { get; private set; }
+        public byte MipMapCount { get; set; }
         public uint NormalMapFlags { get; set; }
         public bool UsesExtraHeader { get; set; }
         public InternalFormat InternalFormat { get; private set; }

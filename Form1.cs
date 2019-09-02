@@ -124,8 +124,19 @@ namespace G1TConverter
                 tex.Mipmap.Bind();
                 widthLabel.Text = $"Width: {tex.Mipmap.Width}";
                 heightLabel.Text = $"Height: {tex.Mipmap.Height}";
-                normalMapLabel.Text = $"Unk table value: {tex.NormalMapFlags:X}";
+                numericUpDownMipMap.Value = tex.MipMapCount;
+
+                if (tex.NormalMapFlags != 0)
+                    checkBoxNormalMap.Checked = true;
+                else
+                    checkBoxNormalMap.Checked = false;
+
+                checkBoxExHeader.Checked = tex.UsesExtraHeader;
+                checkBoxNormalMap.Text = $"Normal map ({tex.NormalMapFlags:X})";
                 pictureBox1.Image = tex.Mipmap.GetBitmap();
+
+                numericUpDownMipMap.Enabled = true;
+                checkBoxNormalMap.Enabled = true;
             }
         }
 
@@ -146,7 +157,10 @@ namespace G1TConverter
             if (e.Button == MouseButtons.Right)
             {
                 int indexitem = textureListBox.IndexFromPoint(e.X, e.Y);
-                if (textureListBox.Items[indexitem] is G1Texture)
+                if (indexitem == -1)
+                {
+                }
+                else if (textureListBox.Items[indexitem] is G1Texture)
                 {
                     textureListBox.SelectedIndex = indexitem;
                     textureMenu.Show(this, new System.Drawing.Point(e.X, e.Y));
@@ -175,6 +189,21 @@ namespace G1TConverter
                     file.Write(savedialog.FileName);
                 }
             }
+        }
+
+        private void NumericUpDownMipMap_ValueChanged(object sender, EventArgs e)
+        {
+            G1Texture tex = (G1Texture)textureListBox.SelectedItem;
+            tex.MipMapCount = (byte)numericUpDownMipMap.Value;
+        }
+
+        private void CheckBoxNormalMap_CheckedChanged(object sender, EventArgs e)
+        {
+            G1Texture tex = (G1Texture)textureListBox.SelectedItem;
+            if (checkBoxNormalMap.Checked)
+                tex.NormalMapFlags = 3;
+            else
+                tex.NormalMapFlags = 0;
         }
     }
 }

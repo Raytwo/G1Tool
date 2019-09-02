@@ -39,9 +39,13 @@
             this.heightLabel = new System.Windows.Forms.Label();
             this.widthLabel = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.normalMapLabel = new System.Windows.Forms.Label();
             this.previewGroupBox = new System.Windows.Forms.GroupBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.mipmapCountLabel = new System.Windows.Forms.Label();
+            this.numericUpDownMipMap = new System.Windows.Forms.NumericUpDown();
+            this.checkBoxExHeader = new System.Windows.Forms.CheckBox();
+            this.checkBoxNormalMap = new System.Windows.Forms.CheckBox();
             this.menuStrip1.SuspendLayout();
             this.settingsGroupBox.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
@@ -49,6 +53,8 @@
             this.groupBox1.SuspendLayout();
             this.previewGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMipMap)).BeginInit();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -109,6 +115,7 @@
             // flowLayoutPanel1
             // 
             this.flowLayoutPanel1.Controls.Add(this.dimensionsGroupBox);
+            this.flowLayoutPanel1.Controls.Add(this.groupBox2);
             this.flowLayoutPanel1.Controls.Add(this.groupBox1);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(3, 16);
@@ -147,22 +154,13 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.normalMapLabel);
-            this.groupBox1.Location = new System.Drawing.Point(3, 74);
+            this.groupBox1.Controls.Add(this.checkBoxExHeader);
+            this.groupBox1.Location = new System.Drawing.Point(3, 167);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(188, 46);
+            this.groupBox1.Size = new System.Drawing.Size(188, 44);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Unknowns";
-            // 
-            // normalMapLabel
-            // 
-            this.normalMapLabel.AutoSize = true;
-            this.normalMapLabel.Location = new System.Drawing.Point(7, 20);
-            this.normalMapLabel.Name = "normalMapLabel";
-            this.normalMapLabel.Size = new System.Drawing.Size(85, 13);
-            this.normalMapLabel.TabIndex = 0;
-            this.normalMapLabel.Text = "Unk table value:";
             // 
             // previewGroupBox
             // 
@@ -184,6 +182,74 @@
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.pictureBox1.TabIndex = 1;
             this.pictureBox1.TabStop = false;
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.checkBoxNormalMap);
+            this.groupBox2.Controls.Add(this.numericUpDownMipMap);
+            this.groupBox2.Controls.Add(this.mipmapCountLabel);
+            this.groupBox2.Location = new System.Drawing.Point(3, 74);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(188, 87);
+            this.groupBox2.TabIndex = 2;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Attributes";
+            // 
+            // mipmapCountLabel
+            // 
+            this.mipmapCountLabel.AutoSize = true;
+            this.mipmapCountLabel.Location = new System.Drawing.Point(10, 20);
+            this.mipmapCountLabel.Name = "mipmapCountLabel";
+            this.mipmapCountLabel.Size = new System.Drawing.Size(160, 13);
+            this.mipmapCountLabel.TabIndex = 0;
+            this.mipmapCountLabel.Text = "Mipmap count (includes texture):";
+            // 
+            // numericUpDownMipMap
+            // 
+            this.numericUpDownMipMap.Enabled = false;
+            this.numericUpDownMipMap.Location = new System.Drawing.Point(13, 36);
+            this.numericUpDownMipMap.Maximum = new decimal(new int[] {
+            9,
+            0,
+            0,
+            0});
+            this.numericUpDownMipMap.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericUpDownMipMap.Name = "numericUpDownMipMap";
+            this.numericUpDownMipMap.Size = new System.Drawing.Size(106, 20);
+            this.numericUpDownMipMap.TabIndex = 1;
+            this.numericUpDownMipMap.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericUpDownMipMap.ValueChanged += new System.EventHandler(this.NumericUpDownMipMap_ValueChanged);
+            // 
+            // checkBoxExHeader
+            // 
+            this.checkBoxExHeader.AutoSize = true;
+            this.checkBoxExHeader.Enabled = false;
+            this.checkBoxExHeader.Location = new System.Drawing.Point(13, 19);
+            this.checkBoxExHeader.Name = "checkBoxExHeader";
+            this.checkBoxExHeader.Size = new System.Drawing.Size(115, 17);
+            this.checkBoxExHeader.TabIndex = 2;
+            this.checkBoxExHeader.Text = "Uses Extra Header";
+            this.checkBoxExHeader.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxNormalMap
+            // 
+            this.checkBoxNormalMap.AutoSize = true;
+            this.checkBoxNormalMap.Enabled = false;
+            this.checkBoxNormalMap.Location = new System.Drawing.Point(13, 62);
+            this.checkBoxNormalMap.Name = "checkBoxNormalMap";
+            this.checkBoxNormalMap.Size = new System.Drawing.Size(82, 17);
+            this.checkBoxNormalMap.TabIndex = 2;
+            this.checkBoxNormalMap.Text = "Normal map";
+            this.checkBoxNormalMap.UseVisualStyleBackColor = true;
+            this.checkBoxNormalMap.CheckedChanged += new System.EventHandler(this.CheckBoxNormalMap_CheckedChanged);
             // 
             // Form1
             // 
@@ -208,6 +274,9 @@
             this.previewGroupBox.ResumeLayout(false);
             this.previewGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMipMap)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -227,8 +296,12 @@
         private System.Windows.Forms.Label widthLabel;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Label normalMapLabel;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.NumericUpDown numericUpDownMipMap;
+        private System.Windows.Forms.Label mipmapCountLabel;
+        private System.Windows.Forms.CheckBox checkBoxExHeader;
+        private System.Windows.Forms.CheckBox checkBoxNormalMap;
     }
 }
 
