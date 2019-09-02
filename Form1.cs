@@ -107,6 +107,11 @@ namespace G1TConverter
                         pictureBox1.Image = temp.Texture.GetBitmap();
                     }
                     break;
+                default:
+                    {
+                        MessageBox.Show("This file format is not supported yet.", "Unsupported file format");
+                    }
+                    break;
             }
             
         }
