@@ -21,6 +21,21 @@ namespace G1TConverter.Formats
         /// Height (in pixel)
         /// </summary>
         public int Height { get; private set; }
+        public int TextureSize
+        {
+            get
+            {
+                switch (InternalFormat)
+                {
+                    case InternalFormat.CompressedRgbS3tcDxt1Ext:
+                        return (Width * Height / 2);
+                    case InternalFormat.CompressedRgbaS3tcDxt5Ext:
+                        return (Width * Height);
+                    default:
+                        return -1;
+                }
+            }
+        }
         /// <summary>
         /// Depth of a volume texture (in pixel)
         /// </summary>
@@ -30,6 +45,7 @@ namespace G1TConverter.Formats
         /// </summary>
         public uint MipMapCount { get; set; }
         public uint PixelFormat { get; private set; }
+        public InternalFormat InternalFormat { get; set; }
 
         public uint Caps { get; private set; }
 
@@ -69,12 +85,27 @@ namespace G1TConverter.Formats
             Depth = r.ReadUInt32();
             MipMapCount = r.ReadUInt32();
             r.SeekCurrent(4 * 11); //Skip reserved
-            uint[] pixelformat = r.ReadUInt32s(8);
+            uint[] pixelformat = r.ReadUInt32s(2);
+            InternalFormat = GetInternalFormatForTextures(r.ReadString(StringBinaryFormat.FixedLength, 4));
+            r.ReadUInt32s(5);
             Caps = r.ReadUInt32();
             uint burnes = r.ReadUInt32();
             uint[] unused = r.ReadUInt32s(3);
 
-            Texture.LoadImageData(Width, Height, r.ReadBytes((int)(Width * Height / 2)), InternalFormat.CompressedRgbS3tcDxt1Ext);
+            Texture.LoadImageData(Width, Height, r.ReadBytes(TextureSize), InternalFormat);
+        }
+
+        public static InternalFormat GetInternalFormatForTextures(string value)
+        {
+            switch (value)
+            {
+                case "DXT1":
+                    return InternalFormat.CompressedRgbS3tcDxt1Ext;
+                case "DXT5":
+                    return InternalFormat.CompressedRgbaS3tcDxt5Ext;
+                default:
+                    throw new NotImplementedException($"Unknown internal pixel format: 0x{value:X}");
+            }
         }
     }
 }

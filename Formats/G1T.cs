@@ -221,7 +221,7 @@ namespace G1TConverter.Formats
             Width = newTex.Width;
             Height = newTex.Height;
             MipMapCount = (byte)newTex.MipMapCount;
-            InternalFormat = InternalFormat.CompressedRgbS3tcDxt1Ext;
+            InternalFormat = newTex.InternalFormat;
             Mipmap = newTex.Texture;
         }
 
