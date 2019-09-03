@@ -285,7 +285,7 @@
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
-            this.Text = "Raytwo\'s Slighty Less Empty G1T Editor";
+            this.Text = "G1Tool";
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.settingsGroupBox.ResumeLayout(false);
