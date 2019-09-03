@@ -23,6 +23,30 @@ namespace G1TConverter
             InitializeComponent();
             CreateOpenGLContext();
             SetUpContextMenu();
+            PopulateCompressionComboBox();
+            
+        }
+
+        public class ComboBoxItem
+        {
+            public string Text { get; set; }
+            public int Value { get; set; }
+
+            public ComboBoxItem(string text, int value = 0)
+            {
+                Text = text;
+                Value = value;
+            }
+
+            public override string ToString()
+            {
+                return Text;
+            }
+        }
+        private void PopulateCompressionComboBox()
+        {
+            comboBoxCompression.Items.Add(new ComboBoxItem("DXT1 (3H)", 0x59));
+            comboBoxCompression.Items.Add(new ComboBoxItem("DXT5 (3H)", 0x5B));
         }
 
         private void CreateOpenGLContext()
@@ -189,6 +213,8 @@ namespace G1TConverter
 
                 pictureBox1.Image = tex.Mipmap.GetBitmap();
 
+                comboBoxCompression.SelectedItem = GetComboBoxItemByValue(tex.InternalFormat);
+
                 numericUpDownMipMap.Enabled = true;
                 checkBoxNormalMap.Enabled = true;
             }
@@ -197,6 +223,17 @@ namespace G1TConverter
                 numericUpDownMipMap.Enabled = false;
                 checkBoxNormalMap.Enabled = false;
             }
+        }
+
+        private object GetComboBoxItemByValue(InternalFormat internalFormat)
+        {
+            foreach(ComboBoxItem item in comboBoxCompression.Items)
+            {
+                if (G1Texture.GetInternalFormatForTextures((byte)item.Value) == internalFormat)
+                    return item;
+            }
+
+            return null;
         }
 
         private void Button1_Click(object sender, EventArgs e)
@@ -264,6 +301,12 @@ namespace G1TConverter
                 tex.NormalMapFlags = 3;
             else
                 tex.NormalMapFlags = 0;
+        }
+
+        private void ComboBoxCompression_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            G1Texture tex = (G1Texture)textureListBox.SelectedItem;
+            tex.InternalFormat = G1Texture.GetInternalFormatForTextures((byte)((ComboBoxItem)comboBoxCompression.SelectedItem).Value);
         }
     }
 }

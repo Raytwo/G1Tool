@@ -134,6 +134,7 @@ namespace G1TConverter.Formats
                 texture.Mipmap.Bind();
 
                 int level = 0;
+
                 for(level = 0; level < texture.MipMapCount; level++)
                 {
                     int imageSize;
@@ -186,7 +187,7 @@ namespace G1TConverter.Formats
         public byte MipMapCount { get; set; }
         public uint NormalMapFlags { get; set; }
         public bool UsesExtraHeader { get; set; }
-        public InternalFormat InternalFormat { get; private set; }
+        public InternalFormat InternalFormat { get; set; }
         public Texture2D Mipmap { get; set; }
         #endregion
 
@@ -224,7 +225,7 @@ namespace G1TConverter.Formats
             Mipmap = newTex.Texture;
         }
 
-        public InternalFormat GetInternalFormatForTextures(byte value)
+        public static InternalFormat GetInternalFormatForTextures(byte value)
         {
             switch (value)
             {
