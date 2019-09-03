@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace G1TConverter
+namespace G1Tool
 {
     static class Program
     {

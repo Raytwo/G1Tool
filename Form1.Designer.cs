@@ -1,4 +1,4 @@
-﻿namespace G1TConverter
+﻿namespace G1Tool
 {
     partial class Form1
     {

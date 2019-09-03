@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 
-namespace G1TConverter.IO
+namespace G1Tool.IO
 {
     public enum Endianness
     {

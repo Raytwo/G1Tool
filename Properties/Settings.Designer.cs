@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace G1TConverter.Properties
+namespace G1Tool.Properties
 {
 
 

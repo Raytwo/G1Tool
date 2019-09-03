@@ -1,4 +1,4 @@
-﻿namespace G1TConverter.IO
+﻿namespace G1Tool.IO
 {
     /// <summary>
     /// Common interface for all objects that can be serialized from and to a stream.

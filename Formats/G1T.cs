@@ -1,11 +1,11 @@
-﻿using G1TConverter.IO;
+﻿using G1Tool.IO;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using SFGraphics.GLObjects.Textures;
 using OpenTK.Graphics.OpenGL;
 
-namespace G1TConverter.Formats
+namespace G1Tool.Formats
 {
     /// <summary>
     /// This class can only handle GT1G0600 textures.

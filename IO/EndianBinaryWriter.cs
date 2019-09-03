@@ -5,7 +5,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 
-namespace G1TConverter.IO
+namespace G1Tool.IO
 {
     public class EndianBinaryWriter : BinaryWriter
     {

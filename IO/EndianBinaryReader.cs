@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 using System.Numerics;
 
-namespace G1TConverter.IO
+namespace G1Tool.IO
 {
     public class EndianBinaryReader : BinaryReader
     {

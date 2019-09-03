@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29209.62
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "G1TConverter", "G1TConverter.csproj", "{3E40D291-7635-4F36-8691-6B523BA7D1AF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "G1Tool", "G1Tool.csproj", "{3E40D291-7635-4F36-8691-6B523BA7D1AF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

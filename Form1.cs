@@ -1,4 +1,4 @@
-﻿using G1TConverter.Formats;
+﻿using G1Tool.Formats;
 using System;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
@@ -7,7 +7,7 @@ using OpenTK.Graphics;
 using OpenTK.Platform;
 using System.IO;
 
-namespace G1TConverter
+namespace G1Tool
 {
     public partial class Form1 : Form
     {

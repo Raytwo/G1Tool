@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace G1TConverter.IO
+namespace G1Tool.IO
 {
     public static class EndiannessHelper
     {

@@ -1,4 +1,4 @@
-﻿using G1TConverter.IO;
+﻿using G1Tool.IO;
 using OpenTK.Graphics.OpenGL;
 using SFGraphics.GLObjects.Textures;
 using System;
@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace G1TConverter.Formats
+namespace G1Tool.Formats
 {
     public class DDS
     {
