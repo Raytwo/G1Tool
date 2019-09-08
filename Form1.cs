@@ -121,8 +121,7 @@ namespace G1Tool
             using (var opendialog = new OpenFileDialog())
             {
                 opendialog.Filter =
-                    "DirectDraw Surface|*.dds|" +
-                    "Portable Network Graphics|*.png";
+                    "DirectDraw Surface|*.dds";
 
                 opendialog.Multiselect = false; //For now at least, only one file at a time
 
@@ -144,13 +143,6 @@ namespace G1Tool
                                 }
 
                                 texture.Replace(temp);
-                            }
-                            break;
-                        case ".png":
-                            {
-                                Stream imageStreamSource = new FileStream(opendialog.FileName, FileMode.Open, FileAccess.Read, FileShare.Read);
-                                PngBitmapDecoder decoder = new PngBitmapDecoder(imageStreamSource, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.Default);
-                                texture.Replace(decoder.Frames[0]);
                             }
                             break;
                     }
