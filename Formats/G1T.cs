@@ -93,7 +93,7 @@ namespace G1Tool.Formats
             long filesizepos = w.Position;
             w.WritePadding(8); // Skip filesize and table address for now
             w.Write((UInt32)TextureCount);
-            w.Write((UInt32)UnkValue1);
+            w.Write(UnkValue1);
             w.WritePadding(4);
 
             foreach (G1Texture texture in Textures)

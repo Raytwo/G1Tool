@@ -288,14 +288,14 @@ namespace G1Tool
 
                 if (savedialog.ShowDialog() == DialogResult.OK)
                 {
-                    G1T file = new G1T();
+                    currentG1T.Textures.Clear();
 
                     foreach(G1Texture texture in textureListBox.Items)
                     {
-                        file.AddTexture(texture);
+                        currentG1T.AddTexture(texture);
                     }
 
-                    file.Write(savedialog.FileName);
+                    currentG1T.Write(savedialog.FileName);
                 }
             }
         }
