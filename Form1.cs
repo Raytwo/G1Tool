@@ -6,6 +6,7 @@ using OpenTK.Graphics.OpenGL;
 using OpenTK.Graphics;
 using OpenTK.Platform;
 using System.IO;
+using System.Windows.Media.Imaging;
 
 namespace G1Tool
 {
@@ -120,24 +121,42 @@ namespace G1Tool
             using (var opendialog = new OpenFileDialog())
             {
                 opendialog.Filter =
-                    "DirectDraw Surface|*.dds";
+                    "DirectDraw Surface|*.dds|" +
+                    "Portable Network Graphics|*.png";
 
                 opendialog.Multiselect = false; //For now at least, only one file at a time
 
                 if (opendialog.ShowDialog() == DialogResult.OK)
                 {
-                    DDS temp = new DDS();
-                    temp.Read(opendialog.FileName);
+                    G1Texture texture = (G1Texture)textureListBox.SelectedItem;
 
-                    if(temp.MipMapCount >= 10)
+                    switch (Path.GetExtension(opendialog.FileName))
                     {
-                        MessageBox.Show("The amount of mipmaps for this texture is too big. Reducing it to 9.");
-                        temp.MipMapCount = 9;
+                        case ".dds":
+                            {
+                                DDS temp = new DDS();
+                                temp.Read(opendialog.FileName);
+
+                                if (temp.MipMapCount >= 10)
+                                {
+                                    MessageBox.Show("The amount of mipmaps for this texture is too big. Reducing it to 9.");
+                                    temp.MipMapCount = 9;
+                                }
+
+                                texture.Replace(temp);
+                            }
+                            break;
+                        case ".png":
+                            {
+                                Stream imageStreamSource = new FileStream(opendialog.FileName, FileMode.Open, FileAccess.Read, FileShare.Read);
+                                PngBitmapDecoder decoder = new PngBitmapDecoder(imageStreamSource, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.Default);
+                                texture.Replace(decoder.Frames[0]);
+                            }
+                            break;
                     }
 
-                    G1Texture texture = (G1Texture)textureListBox.SelectedItem;
-                    texture.Replace(temp);
                     pictureBox1.Image = texture.Mipmap.GetBitmap();
+
                 }
             }
         }

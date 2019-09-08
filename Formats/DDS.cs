@@ -1,6 +1,7 @@
 ﻿using G1Tool.IO;
 using OpenTK.Graphics.OpenGL;
 using SFGraphics.GLObjects.Textures;
+using SFGraphics.GLObjects.Textures.TextureFormats;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,6 +28,8 @@ namespace G1Tool.Formats
             {
                 switch (InternalFormat)
                 {
+                    case InternalFormat.Rgba8:
+                        return (Width * Height) * 4;
                     case InternalFormat.CompressedRgbS3tcDxt1Ext:
                         return (Width * Height / 2);
                     case InternalFormat.CompressedRgbaS3tcDxt5Ext:
@@ -84,6 +87,8 @@ namespace G1Tool.Formats
             uint pitch = r.ReadUInt32();
             Depth = r.ReadUInt32();
             MipMapCount = r.ReadUInt32();
+            if (MipMapCount == 0)
+                MipMapCount = 1;
             r.SeekCurrent(4 * 11); //Skip reserved
             uint[] pixelformat = r.ReadUInt32s(2);
             InternalFormat = GetInternalFormatForTextures(r.ReadString(StringBinaryFormat.FixedLength, 4));
@@ -92,7 +97,11 @@ namespace G1Tool.Formats
             uint burnes = r.ReadUInt32();
             uint[] unused = r.ReadUInt32s(3);
 
-            Texture.LoadImageData(Width, Height, r.ReadBytes(TextureSize), InternalFormat);
+            if (TextureFormatTools.IsCompressed(InternalFormat))
+                Texture.LoadImageData(Width, Height, r.ReadBytes(TextureSize), InternalFormat);
+            else
+                Texture.LoadImageData(Width, Height, r.ReadBytes(TextureSize), new TextureFormatUncompressed(PixelInternalFormat.Rgba8, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte));
+
         }
 
         public static InternalFormat GetInternalFormatForTextures(string value)
@@ -104,7 +113,7 @@ namespace G1Tool.Formats
                 case "DXT5":
                     return InternalFormat.CompressedRgbaS3tcDxt5Ext;
                 default:
-                    throw new NotImplementedException($"Unknown internal pixel format: 0x{value:X}");
+                    return InternalFormat.Rgba8;
             }
         }
     }

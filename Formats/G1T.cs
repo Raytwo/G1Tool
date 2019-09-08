@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using SFGraphics.GLObjects.Textures;
 using SFGraphics.GLObjects.Textures.TextureFormats;
 using OpenTK.Graphics.OpenGL;
+using System.Windows.Media.Imaging;
 
 namespace G1Tool.Formats
 {
@@ -251,8 +252,18 @@ namespace G1Tool.Formats
             Width = newTex.Width;
             Height = newTex.Height;
             MipMapCount = (byte)newTex.MipMapCount;
-            InternalFormat = newTex.InternalFormat;
+            pixelInternalFormat = (PixelInternalFormat)newTex.InternalFormat;
             Mipmap = newTex.Texture;
+        }
+
+        public void Replace(BitmapSource newTex)
+        {
+            Width = newTex.PixelWidth;
+            Height = newTex.PixelHeight;
+            MipMapCount = 1;
+            byte[] image = new byte[Width * Height * 4];
+            newTex.CopyPixels(image, Width * 4, 0);
+            Mipmap.LoadImageData(Width, Height, image, new TextureFormatUncompressed(pixelInternalFormat, pixelFormat, pixelType));
         }
 
         public byte GetG1TextureCompressionType()
