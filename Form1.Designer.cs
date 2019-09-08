@@ -48,6 +48,7 @@
             this.checkBoxExHeader = new System.Windows.Forms.CheckBox();
             this.previewGroupBox = new System.Windows.Forms.GroupBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.panel1 = new System.Windows.Forms.Panel();
             this.menuStrip1.SuspendLayout();
             this.settingsGroupBox.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
@@ -57,6 +58,7 @@
             this.groupBox1.SuspendLayout();
             this.previewGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -256,7 +258,7 @@
             // previewGroupBox
             // 
             this.previewGroupBox.AutoSize = true;
-            this.previewGroupBox.Controls.Add(this.pictureBox1);
+            this.previewGroupBox.Controls.Add(this.panel1);
             this.previewGroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.previewGroupBox.Location = new System.Drawing.Point(120, 24);
             this.previewGroupBox.Name = "previewGroupBox";
@@ -268,13 +270,23 @@
             // pictureBox1
             // 
             this.pictureBox1.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pictureBox1.Location = new System.Drawing.Point(3, 16);
+            this.pictureBox1.Location = new System.Drawing.Point(0, 0);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(519, 519);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.pictureBox1.TabIndex = 1;
             this.pictureBox1.TabStop = false;
+            // 
+            // panel1
+            // 
+            this.panel1.AutoScroll = true;
+            this.panel1.AutoSize = true;
+            this.panel1.Controls.Add(this.pictureBox1);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel1.Location = new System.Drawing.Point(3, 16);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(519, 519);
+            this.panel1.TabIndex = 2;
             // 
             // Form1
             // 
@@ -302,6 +314,8 @@
             this.previewGroupBox.ResumeLayout(false);
             this.previewGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -329,6 +343,7 @@
         private System.Windows.Forms.CheckBox checkBoxNormalMap;
         private System.Windows.Forms.ComboBox comboBoxCompression;
         private System.Windows.Forms.Label labelCompression;
+        private System.Windows.Forms.Panel panel1;
     }
 }
 
