@@ -255,6 +255,7 @@
             // 
             // previewGroupBox
             // 
+            this.previewGroupBox.AutoSize = true;
             this.previewGroupBox.Controls.Add(this.pictureBox1);
             this.previewGroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.previewGroupBox.Location = new System.Drawing.Point(120, 24);
@@ -266,6 +267,7 @@
             // 
             // pictureBox1
             // 
+            this.pictureBox1.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox1.Location = new System.Drawing.Point(3, 16);
             this.pictureBox1.Name = "pictureBox1";

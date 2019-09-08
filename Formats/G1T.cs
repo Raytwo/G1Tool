@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using SFGraphics.GLObjects.Textures;
+using SFGraphics.GLObjects.Textures.TextureFormats;
 using OpenTK.Graphics.OpenGL;
 
 namespace G1Tool.Formats
@@ -111,10 +112,12 @@ namespace G1Tool.Formats
                 w.Write((byte)(texture.MipMapCount << 4));
                 //w.Write((byte)(1 << 4)); //Until mipmap generation is added
 
-                if (texture.InternalFormat == InternalFormat.CompressedRgbS3tcDxt1Ext)
+                if (texture.pixelInternalFormat == PixelInternalFormat.CompressedRgbS3tcDxt1Ext)
                     w.Write((byte)0x59);
-                else if (texture.InternalFormat == InternalFormat.CompressedRgbaS3tcDxt5Ext)
+                else if (texture.pixelInternalFormat == PixelInternalFormat.CompressedRgbaS3tcDxt5Ext)
                     w.Write((byte)0x5B);
+                else if (texture.pixelInternalFormat == PixelInternalFormat.Rgba8)
+                    w.Write((byte)0x1);
 
                 int dimensions = (int)Math.Log(texture.Width, 2) | (int)Math.Log(texture.Height, 2) << 4;
                 w.Write((short)dimensions);
@@ -138,9 +141,21 @@ namespace G1Tool.Formats
                 for(level = 0; level < texture.MipMapCount; level++)
                 {
                     int imageSize;
-                    GL.GetTexLevelParameter(TextureTarget.Texture2D, level, GetTextureParameter.TextureCompressedImageSize, out imageSize);
+                    if (TextureFormatTools.IsCompressed(texture.pixelInternalFormat))
+                        GL.GetTexLevelParameter(TextureTarget.Texture2D, level, GetTextureParameter.TextureCompressedImageSize, out imageSize);
+                    else
+                        imageSize = texture.Mipmap.GetImageData(0).Length;
+
                     byte[] mipmap = new byte[imageSize];
-                    GL.GetCompressedTexImage(TextureTarget.Texture2D, level, mipmap);
+
+                    if(TextureFormatTools.IsCompressed(texture.pixelInternalFormat))
+                        GL.GetCompressedTexImage(TextureTarget.Texture2D, level, mipmap);
+                    else
+                    {
+                        GL.GetTexImage(TextureTarget.Texture2D, level, texture.pixelFormat, texture.pixelType, mipmap);
+                        //mipmap = texture.Mipmap.GetImageData(0);
+                    }
+
                     w.Write(mipmap);
                 }
             }
@@ -163,6 +178,10 @@ namespace G1Tool.Formats
 
     public class G1Texture
     {
+        public PixelInternalFormat pixelInternalFormat;
+        public PixelFormat pixelFormat;
+        public PixelType pixelType = PixelType.UnsignedByte;
+
         #region Properties
         public int Width { get; private set; }
         public int Height { get; private set; }
@@ -173,11 +192,13 @@ namespace G1Tool.Formats
         {
             get
             {
-                switch (InternalFormat)
+                switch (pixelInternalFormat)
                 {
-                    case InternalFormat.CompressedRgbS3tcDxt1Ext:
+                    case PixelInternalFormat.Rgba8:
+                        return (Width * Height) * 4;
+                    case PixelInternalFormat.CompressedRgbS3tcDxt1Ext:
                         return (Width * Height / 2);
-                    case InternalFormat.CompressedRgbaS3tcDxt5Ext:
+                    case PixelInternalFormat.CompressedRgbaS3tcDxt5Ext:
                         return (Width * Height);
                     default:
                         return -1;
@@ -199,7 +220,7 @@ namespace G1Tool.Formats
         public void Read(EndianBinaryReader r)
         {
             MipMapCount = (byte)(r.ReadByte() >> 4);
-            InternalFormat = GetInternalFormatForTextures(r.ReadByte());
+            SetPixelFormatFromG1TextureCompressionType(r.ReadByte());
 
             short dimensions = r.ReadInt16();
             Width = (int)Math.Pow(2, (dimensions & 0xF));
@@ -211,9 +232,18 @@ namespace G1Tool.Formats
                 UsesExtraHeader = true;
                 r.SeekCurrent(0xC);
             }
-
-            Mipmap.LoadImageData(Width, Height, r.ReadBytes(TextureSize), InternalFormat);
             
+            if(TextureFormatTools.IsCompressed(pixelInternalFormat))
+            {
+                Mipmap.LoadImageData(Width, Height, r.ReadBytes(TextureSize), (InternalFormat)pixelInternalFormat);
+            }
+            else
+            {
+                Mipmap.LoadImageData(Width, Height, r.ReadBytes(TextureSize), new TextureFormatUncompressed(pixelInternalFormat, pixelFormat, pixelType));
+            }
+            
+            
+
         }
 
         public void Replace(DDS newTex)
@@ -225,16 +255,53 @@ namespace G1Tool.Formats
             Mipmap = newTex.Texture;
         }
 
-        public static InternalFormat GetInternalFormatForTextures(byte value)
+        public byte GetG1TextureCompressionType()
+        {
+            switch(pixelInternalFormat)
+            {
+                case PixelInternalFormat.Rgba8:
+                    return 0x1;
+                case PixelInternalFormat.CompressedRgbS3tcDxt1Ext:
+                    return 0x59;
+                case PixelInternalFormat.CompressedRgbaS3tcDxt5Ext:
+                    return 0x5B;
+                default:
+                    throw new NotImplementedException("Not implemented yet gtfo");
+            }
+        }
+
+        public void SetPixelFormatFromG1TextureCompressionType(byte comp)
+        {
+            switch(comp)
+            {
+                case 0x1:
+                    pixelInternalFormat = PixelInternalFormat.Rgba8;
+                    pixelFormat = PixelFormat.Bgra;
+                    pixelType = PixelType.UnsignedByte;
+                    break;
+                case 0x59:
+                    pixelInternalFormat = PixelInternalFormat.CompressedRgbS3tcDxt1Ext;
+                    break;
+                case 0x5b:
+                    pixelInternalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
+                    break;
+                default:
+                    throw new NotImplementedException("Not implemented, biatch");
+            }
+        }
+
+        public static PixelInternalFormat GetPixelInternalFormatForTextures(byte value)
         {
             switch (value)
             {
+                case 0x1:
+                    return PixelInternalFormat.Rgba8;
                 case 0x6:
                 case 0x59:
-                    return InternalFormat.CompressedRgbS3tcDxt1Ext;
+                    return PixelInternalFormat.CompressedRgbS3tcDxt1Ext;
                 case 0x8:
                 case 0x5B:
-                    return InternalFormat.CompressedRgbaS3tcDxt5Ext;
+                    return PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
                 default:
                     throw new NotImplementedException($"Unknown internal pixel format: 0x{value:X}");
             }

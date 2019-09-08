@@ -45,6 +45,7 @@ namespace G1Tool
         }
         private void PopulateCompressionComboBox()
         {
+            comboBoxCompression.Items.Add(new ComboBoxItem("RGBA8", 0x1));
             comboBoxCompression.Items.Add(new ComboBoxItem("DXT1 (3H)", 0x59));
             comboBoxCompression.Items.Add(new ComboBoxItem("DXT5 (3H)", 0x5B));
         }
@@ -213,7 +214,7 @@ namespace G1Tool
 
                 pictureBox1.Image = tex.Mipmap.GetBitmap();
 
-                comboBoxCompression.SelectedItem = GetComboBoxItemByValue(tex.InternalFormat);
+                comboBoxCompression.SelectedItem = GetComboBoxItemByValue(tex.pixelInternalFormat);
 
                 numericUpDownMipMap.Enabled = true;
                 checkBoxNormalMap.Enabled = true;
@@ -225,11 +226,11 @@ namespace G1Tool
             }
         }
 
-        private object GetComboBoxItemByValue(InternalFormat internalFormat)
+        private object GetComboBoxItemByValue(PixelInternalFormat internalFormat)
         {
             foreach(ComboBoxItem item in comboBoxCompression.Items)
             {
-                if (G1Texture.GetInternalFormatForTextures((byte)item.Value) == internalFormat)
+                if (G1Texture.GetPixelInternalFormatForTextures((byte)item.Value) == internalFormat)
                     return item;
             }
 
@@ -306,7 +307,7 @@ namespace G1Tool
         private void ComboBoxCompression_SelectedIndexChanged(object sender, EventArgs e)
         {
             G1Texture tex = (G1Texture)textureListBox.SelectedItem;
-            tex.InternalFormat = G1Texture.GetInternalFormatForTextures((byte)((ComboBoxItem)comboBoxCompression.SelectedItem).Value);
+            tex.pixelInternalFormat = G1Texture.GetPixelInternalFormatForTextures((byte)((ComboBoxItem)comboBoxCompression.SelectedItem).Value);
         }
     }
 }
