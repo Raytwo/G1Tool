@@ -21,6 +21,7 @@ namespace G1Tool.Formats
             get { return (uint)Textures.Count; }
         }
 
+        public uint UnkValue1 { get; private set; }
         public List<G1Texture> Textures { get; private set; }
         #endregion
 
@@ -62,7 +63,7 @@ namespace G1Tool.Formats
 
             uint texCount = r.ReadUInt32();
 
-            uint unk1 = r.ReadUInt32();
+            UnkValue1 = r.ReadUInt32(); //0x10 or 0xA, no idea what the difference is
             uint unk2 = r.ReadUInt32();
 
             uint[] normalMapFlags = r.ReadUInt32s((int)texCount);
@@ -92,7 +93,7 @@ namespace G1Tool.Formats
             long filesizepos = w.Position;
             w.WritePadding(8); // Skip filesize and table address for now
             w.Write((UInt32)TextureCount);
-            w.Write((UInt32)0x10);
+            w.Write((UInt32)UnkValue1);
             w.WritePadding(4);
 
             foreach (G1Texture texture in Textures)
