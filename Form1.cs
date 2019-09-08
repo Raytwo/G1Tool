@@ -47,6 +47,7 @@ namespace G1Tool
         private void PopulateCompressionComboBox()
         {
             comboBoxCompression.Items.Add(new ComboBoxItem("RGBA8", 0x1));
+            comboBoxCompression.Items.Add(new ComboBoxItem("RGBA8 (Warriors Orochi 4)", 0x2));
             comboBoxCompression.Items.Add(new ComboBoxItem("DXT1 (3H)", 0x59));
             comboBoxCompression.Items.Add(new ComboBoxItem("DXT5 (3H)", 0x5B));
         }
@@ -105,10 +106,35 @@ namespace G1Tool
         {
             MenuItem replace = new MenuItem("Replace");
             MenuItem remove = new MenuItem("Remove");
+            MenuItem exportPNG = new MenuItem("Export to PNG");
             replace.Click += Replace_Click;
             remove.Click += Remove_Click;
+            exportPNG.Click += ExportPNG_Click;
             textureMenu.MenuItems.Add(replace);
             textureMenu.MenuItems.Add(remove);
+            textureMenu.MenuItems.Add(exportPNG);
+        }
+
+        private void ExportPNG_Click(object sender, EventArgs e)
+        {
+            using (var opendialog = new SaveFileDialog())
+            {
+                opendialog.Filter =
+                    "Portable Network Graphics|*.png";
+
+                if (opendialog.ShowDialog() == DialogResult.OK)
+                {
+                    switch (Path.GetExtension(opendialog.FileName))
+                    {
+                        case ".png":
+                            {
+                                pictureBox1.Image.Save(opendialog.FileName, ImageFormat.Png);
+                            }
+                            break;
+                    }
+
+                }
+            }
         }
 
         private void Remove_Click(object sender, EventArgs e)
@@ -152,6 +178,7 @@ namespace G1Tool
                 }
             }
         }
+
 
         private void OpenToolStripMenuItem_Click(object sender, EventArgs e)
         {

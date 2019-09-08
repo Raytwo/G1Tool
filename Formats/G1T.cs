@@ -45,7 +45,7 @@ namespace G1Tool.Formats
 
             Version = r.ReadUInt32();
 
-            if (Version != 0x30303630)
+            if (Version != 0x30303630 && Version != 0x30303631 && Version != 0x30303632)
             {
                 MessageBox.Show("This version of the G1T format is unsupported.", "Unsupported version");
                 return;
@@ -89,7 +89,7 @@ namespace G1Tool.Formats
         public void Write(EndianBinaryWriter w)
         {
             w.Write("GT1G", StringBinaryFormat.FixedLength, 4); // Magic
-            w.Write("0600", StringBinaryFormat.FixedLength, 4); //Version
+            w.Write(Version); //Version
             long filesizepos = w.Position;
             w.WritePadding(8); // Skip filesize and table address for now
             w.Write((UInt32)TextureCount);
@@ -294,6 +294,11 @@ namespace G1Tool.Formats
                     pixelFormat = PixelFormat.Bgra;
                     pixelType = PixelType.UnsignedByte;
                     break;
+                case 0x2:
+                    pixelInternalFormat = PixelInternalFormat.Rgba8;
+                    pixelFormat = PixelFormat.Rgba;
+                    pixelType = PixelType.UnsignedByte;
+                    break;
                 case 0x59:
                     pixelInternalFormat = PixelInternalFormat.CompressedRgbS3tcDxt1Ext;
                     break;
@@ -301,7 +306,7 @@ namespace G1Tool.Formats
                     pixelInternalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
                     break;
                 default:
-                    throw new NotImplementedException("Not implemented, biatch");
+                    throw new NotImplementedException($"Unknown pixel format: 0x{comp:X}");
             }
         }
 

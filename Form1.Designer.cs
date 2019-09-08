@@ -206,7 +206,7 @@
             this.numericUpDownMipMap.Enabled = false;
             this.numericUpDownMipMap.Location = new System.Drawing.Point(13, 36);
             this.numericUpDownMipMap.Maximum = new decimal(new int[] {
-            9,
+            10,
             0,
             0,
             0});
