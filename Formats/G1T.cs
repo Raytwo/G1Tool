@@ -126,14 +126,14 @@ namespace G1Tool.Formats
 
                 if(texture.UsesExtraHeader)
                 {
-                    w.Write((uint)0x10211000);
+                    w.Write(texture.Flags);
                     w.Write((uint)0xC);
                     w.WritePadding(4);
-                    w.Write((uint)0x1000000);
+                    w.Write(texture.ExtraHeaderUnk);
                 }
                 else
                 {
-                    w.Write((uint)0x211000);
+                    w.Write(texture.Flags);
                 }
 
                 texture.Mipmap.Bind();
@@ -209,7 +209,9 @@ namespace G1Tool.Formats
         }
         public byte MipMapCount { get; set; }
         public uint NormalMapFlags { get; set; }
+        public uint Flags { get; set; }
         public bool UsesExtraHeader { get; set; }
+        public uint ExtraHeaderUnk { get; set; }
         public InternalFormat InternalFormat { get; set; }
         public Texture2D Mipmap { get; set; }
         #endregion
@@ -227,12 +229,13 @@ namespace G1Tool.Formats
             short dimensions = r.ReadInt16();
             Width = (int)Math.Pow(2, (dimensions & 0xF));
             Height = (int)Math.Pow(2, (dimensions >> 4));
-
+            Flags = r.ReadUInt32();
             // Skip the Extra Texture Header until we know what it does
-            if ((r.ReadUInt32() >> 24) == 0x10)
+            if ((Flags >> 24) == 0x10)
             {
                 UsesExtraHeader = true;
-                r.SeekCurrent(0xC);
+                r.SeekCurrent(0x8);
+                ExtraHeaderUnk = r.ReadUInt32();
             }
             
             if(TextureFormatTools.IsCompressed(pixelInternalFormat))
