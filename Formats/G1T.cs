@@ -315,6 +315,7 @@ namespace G1Tool.Formats
             switch (value)
             {
                 case 0x1:
+                case 0x2:
                     return PixelInternalFormat.Rgba8;
                 case 0x6:
                 case 0x59:
