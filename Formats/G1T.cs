@@ -183,6 +183,7 @@ namespace G1Tool.Formats
         public PixelInternalFormat pixelInternalFormat;
         public PixelFormat pixelFormat;
         public PixelType pixelType = PixelType.UnsignedByte;
+        public byte compression_format;
 
         #region Properties
         public int Width { get; private set; }
@@ -224,7 +225,8 @@ namespace G1Tool.Formats
         public void Read(EndianBinaryReader r)
         {
             MipMapCount = (byte)(r.ReadByte() >> 4);
-            SetPixelFormatFromG1TextureCompressionType(r.ReadByte());
+            compression_format = r.ReadByte();
+            SetPixelFormatFromG1TextureCompressionType(compression_format);
 
             short dimensions = r.ReadInt16();
             Width = (int)Math.Pow(2, (dimensions & 0xF));
@@ -299,9 +301,11 @@ namespace G1Tool.Formats
                     pixelFormat = PixelFormat.Rgba;
                     pixelType = PixelType.UnsignedByte;
                     break;
+                case 0x6:
                 case 0x59:
                     pixelInternalFormat = PixelInternalFormat.CompressedRgbS3tcDxt1Ext;
                     break;
+                case 0x8:
                 case 0x5b:
                     pixelInternalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
                     break;

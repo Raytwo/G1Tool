@@ -48,6 +48,8 @@ namespace G1Tool
         {
             comboBoxCompression.Items.Add(new ComboBoxItem("RGBA8", 0x1));
             comboBoxCompression.Items.Add(new ComboBoxItem("RGBA8 (Warriors Orochi 4)", 0x2));
+            comboBoxCompression.Items.Add(new ComboBoxItem("DXT1 (FEW)", 0x6));
+            comboBoxCompression.Items.Add(new ComboBoxItem("DXT5 (FEW)", 0x8));
             comboBoxCompression.Items.Add(new ComboBoxItem("DXT1 (3H)", 0x59));
             comboBoxCompression.Items.Add(new ComboBoxItem("DXT5 (3H)", 0x5B));
         }
@@ -252,7 +254,7 @@ namespace G1Tool
 
                 pictureBox1.Image = tex.Mipmap.GetBitmap();
 
-                comboBoxCompression.SelectedItem = GetComboBoxItemByValue(tex.pixelInternalFormat);
+                comboBoxCompression.SelectedItem = GetComboBoxItemByValue(tex.compression_format);
 
                 numericUpDownMipMap.Enabled = true;
                 checkBoxNormalMap.Enabled = true;
@@ -264,11 +266,11 @@ namespace G1Tool
             }
         }
 
-        private object GetComboBoxItemByValue(PixelInternalFormat internalFormat)
+        private object GetComboBoxItemByValue(byte internalFormat)
         {
             foreach(ComboBoxItem item in comboBoxCompression.Items)
             {
-                if (G1Texture.GetPixelInternalFormatForTextures((byte)item.Value) == internalFormat)
+                if (item.Value == internalFormat)
                     return item;
             }
 
