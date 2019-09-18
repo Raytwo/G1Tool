@@ -112,14 +112,7 @@ namespace G1Tool.Formats
                 offsets.Add((uint)w.Position - (uint)offsettablepos);
 
                 w.Write((byte)(texture.MipMapCount << 4));
-                //w.Write((byte)(1 << 4)); //Until mipmap generation is added
-
-                if (texture.pixelInternalFormat == PixelInternalFormat.CompressedRgbS3tcDxt1Ext)
-                    w.Write((byte)0x59);
-                else if (texture.pixelInternalFormat == PixelInternalFormat.CompressedRgbaS3tcDxt5Ext)
-                    w.Write((byte)0x5B);
-                else if (texture.pixelInternalFormat == PixelInternalFormat.Rgba8)
-                    w.Write((byte)0x1);
+                w.Write(texture.compression_format);
 
                 int dimensions = (int)Math.Log(texture.Width, 2) | (int)Math.Log(texture.Height, 2) << 4;
                 w.Write((short)dimensions);
