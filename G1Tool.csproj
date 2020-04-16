@@ -84,6 +84,8 @@
     </Compile>
     <Compile Include="Formats\DDS.cs" />
     <Compile Include="Formats\G1T.cs" />
+    <Compile Include="Formats\KTBin.cs" />
+    <Compile Include="Formats\KTGZip.cs" />
     <Compile Include="IO\AlignmentHelper.cs" />
     <Compile Include="IO\EndianBinaryReader.cs" />
     <Compile Include="IO\EndianBinaryWriter.cs" />
