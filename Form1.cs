@@ -12,12 +12,7 @@ namespace G1Tool
 {
     public partial class Form1 : Form
     {
-
-
         ContextMenu g1tMenu = new ContextMenu();
-        ContextMenu textureMenu = new ContextMenu();
-
-        private G1T currentG1T;
         private KTBin BinFile { get; set; }
         private int FormatIndex { get; set; }
         private ContextMenu ContextMenuBinDDS { get; set; }
@@ -25,9 +20,9 @@ namespace G1Tool
         private ContextMenu ContextMenuBin { get; set; }
         private ContextMenu ContextMenuDDS { get; set; }
         private ContextMenu ContextMenuG1T { get; set; }
-        private new List<List<G1T>> BinFileList { get; set; }   // I hate KT
+        private new List<List<G1T>> BinFileList { get; set; }   // I hate KT    // FileList for storing format
         private List<G1T> G1TFileList { get; set; }
-        private List<string> FilePathBinGZList { get; set; }
+        private List<string> FilePathBinGZList { get; set; }    // The string name of the files
         private List<string> FilePathBinList { get; set; }
         private List<string> FilePathG1TList { get; set; }
         private int NodeIndexBin { get; set; }
@@ -91,7 +86,7 @@ namespace G1Tool
 
         private void Add_Click(object sender, EventArgs e)
         {
-            /* using (var opendialog = new openFileDialog())
+            /*using (var opendialog = new openFileDialog())
              {
                  opendialog.Filter =
                      "DirectDraw Surface|*.dds";
@@ -120,47 +115,58 @@ namespace G1Tool
 
         private void SetUpTextureContextMenu()
         {
+            // Apparently can't share the same object
             // Bin
             MenuItem replaceDDS = new MenuItem("Replace DDS");
+            MenuItem exportPNG = new MenuItem("Export as PNG");
             replaceDDS.Click += ReplaceDDS_Click;
+            exportPNG.Click += ExportPNG_Click;
             ContextMenuBinDDS = new ContextMenu();
             ContextMenuBinDDS.MenuItems.Add(replaceDDS);
+            ContextMenuBinDDS.MenuItems.Add(exportPNG);
 
             MenuItem replaceG1T = new MenuItem("Replace G1T");
+            MenuItem batchExportPNG = new MenuItem("Batch export as PNG");
             replaceG1T.Click += ReplaceG1T_Click;
+            batchExportPNG.Click += BatchExportPNG_Click;
             ContextMenuBinG1T = new ContextMenu();
             ContextMenuBinG1T.MenuItems.Add(replaceG1T);
+            ContextMenuBinG1T.MenuItems.Add(batchExportPNG);
 
-            MenuItem saveBin = new MenuItem("Save");
-            MenuItem saveBinAs = new MenuItem("Save As...");
-            saveBin.Click += SaveBin_Click;
-            saveBinAs.Click += SaveBinAs_Click;
+            MenuItem save = new MenuItem("Save");
+            MenuItem saveAs = new MenuItem("Save As...");
+            MenuItem binBatchExportPNG = new MenuItem("Batch export G1T as PNG");
+            save.Click += Save_Click;
+            saveAs.Click += SaveAs_Click;
+            binBatchExportPNG.Click += BinBatchExportPNG_Click;
             ContextMenuBin = new ContextMenu();
-            ContextMenuBin.MenuItems.Add(saveBin);
-            ContextMenuBin.MenuItems.Add(saveBinAs);
+            ContextMenuBin.MenuItems.Add(save);
+            ContextMenuBin.MenuItems.Add(saveAs);
+            ContextMenuBin.MenuItems.Add(binBatchExportPNG);
 
             // G1T
             ContextMenuDDS = new ContextMenu();
+            replaceDDS = new MenuItem("Replace DDS");
+            exportPNG = new MenuItem("Export as PNG");
+            replaceDDS.Click += ReplaceDDS_Click;
+            exportPNG.Click += ExportPNG_Click;
+            ContextMenuDDS = new ContextMenu();
             ContextMenuDDS.MenuItems.Add(replaceDDS);
+            ContextMenuDDS.MenuItems.Add(exportPNG);
 
-            MenuItem saveG1T = new MenuItem("Save");
-            MenuItem saveG1TAs = new MenuItem("Save As...");
-            saveG1T.Click += SaveG1T_Click;
-            saveG1TAs.Click += SaveG1TAs_Click;
+            save = new MenuItem("Save");
+            saveAs = new MenuItem("Save As...");
+            replaceG1T = new MenuItem("Replace G1T");
+            batchExportPNG = new MenuItem("Batch export as PNG");
+            save.Click += Save_Click;
+            saveAs.Click += SaveAs_Click;
+            replaceG1T.Click += ReplaceG1T_Click;
+            batchExportPNG.Click += BatchExportPNG_Click;
             ContextMenuG1T = new ContextMenu();
-            ContextMenuG1T.MenuItems.Add(saveG1T);
-            ContextMenuG1T.MenuItems.Add(saveG1TAs);
+            ContextMenuG1T.MenuItems.Add(save);
+            ContextMenuG1T.MenuItems.Add(saveAs);
             ContextMenuG1T.MenuItems.Add(replaceG1T);
-            //     MenuItem remove = new MenuItem("Remove");
-            //    MenuItem exportPNG = new MenuItem("Export to PNG");
-
-            //     remove.Click += Remove_Click;
-            //     exportPNG.Click += ExportPNG_Click;
-
-            //  cmDatabase.MenuItems.Add(replaceG1T);
-            //  treeView1.ContextMenu = cmDatabase;
-            //   treeView1.ContextMenu.MenuItems.Add(remove);
-            // treeView1.ContextMenu.MenuItems.Add(exportPNG);
+            ContextMenuG1T.MenuItems.Add(batchExportPNG);
         }
 
         private void ExportPNG_Click(object sender, EventArgs e)
@@ -184,10 +190,51 @@ namespace G1Tool
                 }
             }
         }
-
-        private void Remove_Click(object sender, EventArgs e)
+        private void BinBatchExportPNG_Click(object sender, EventArgs e)
         {
-            //    textureListBox.Items.Remove(textureListBox.SelectedItem);
+            using (var browserDialog = new FolderBrowserDialog())
+            {
+                if (browserDialog.ShowDialog() == DialogResult.OK)
+                {
+                    for (int i = 0; i < BinFileList[treeView1.SelectedNode.Index].Count; i++)
+                    {
+                        for (int ii = 0; ii < BinFileList[treeView1.SelectedNode.Index][i].Textures.Count; ii++)
+                        {
+                            LoadImage(BinFileList[treeView1.SelectedNode.Index][i].Textures[ii]);
+                            Directory.CreateDirectory(browserDialog.SelectedPath + "\\" + i.ToString());
+                            pictureBox1.Image.Save(browserDialog.SelectedPath + "\\" + i.ToString() + "\\" + Path.GetFileNameWithoutExtension(treeView1.SelectedNode.Nodes[i].Nodes[ii].Text) + ".png", ImageFormat.Png);
+                        }
+                    }
+                }
+            }
+        }
+        private void BatchExportPNG_Click(object sender, EventArgs e)
+        {
+            using (var browserDialog = new FolderBrowserDialog())
+            {
+                if (browserDialog.ShowDialog() == DialogResult.OK)
+                {
+                    if (FormatIndex == NodeIndexBin && treeView1.Nodes.ContainsKey("BIN"))
+                    {
+                        for (int i = 0; i < BinFileList[treeView1.SelectedNode.Parent.Index][treeView1.SelectedNode.Index].Textures.Count; i++)
+                        {
+                            LoadImage(BinFileList[treeView1.SelectedNode.Parent.Index][treeView1.SelectedNode.Index].Textures[i]);
+                            pictureBox1.Image.Save(browserDialog.SelectedPath + "\\" + Path.GetFileNameWithoutExtension(treeView1.SelectedNode.Nodes[i].Text) + ".png", ImageFormat.Png);
+                            MessageBox.Show(browserDialog.SelectedPath + "\\" + Path.GetFileNameWithoutExtension(treeView1.SelectedNode.Nodes[i].Text) + ".png");
+                        }
+                    }
+
+                    if (FormatIndex == NodeIndexG1T && treeView1.Nodes.ContainsKey("G1T"))
+                    {
+                        for (int i = 0; i < G1TFileList[treeView1.SelectedNode.Index].Textures.Count; i++)
+                        {
+                            LoadImage(G1TFileList[treeView1.SelectedNode.Index].Textures[i]);
+                            pictureBox1.Image.Save(browserDialog.SelectedPath + "\\" + Path.GetFileNameWithoutExtension(treeView1.SelectedNode.Nodes[i].Text) + ".png", ImageFormat.Png);
+                        }
+                    }
+                }
+            }
+            
         }
 
         private void ReplaceDDS_Click(object sender, EventArgs e)
@@ -372,10 +419,9 @@ namespace G1Tool
                 treeView1.Nodes[NodeIndexBin].Nodes.Add(node);
                 BinFile = new KTBin();
                 var binEntries = new List<G1T>();
-                var ktGZip = new KTGZip();
                 var dummyEntry = new G1T();
 
-                BinFile.ReadKTBin(FilePathBinGZList[i]);
+                BinFile.Read(FilePathBinGZList[i]);
                 for (int ii = 0; ii < BinFile.FileList.Count; ii++)
                 {
                     if (BinFile.FileList[ii].Length != 0)
@@ -383,7 +429,7 @@ namespace G1Tool
                         #region Compressed Entries
                         try
                         {
-                            int magicID = BitConverter.ToInt32(ktGZip.Decompress(BinFile.FileList[ii]), 0x0);
+                            int magicID = BitConverter.ToInt32(KTGZip.Decompress(BinFile.FileList[ii]), 0x0);
                             switch (magicID)
                             {
                                 case (0x47314D5F):  // G1M_
@@ -397,7 +443,7 @@ namespace G1Tool
                                         treeView1.Nodes[NodeIndexBin].Nodes[i].Nodes.Add(new TreeNode(ii.ToString() + ".g1t"));
 
                                         var g1t = new G1T();
-                                        g1t.Read(ktGZip.Decompress(BinFile.FileList[ii]));
+                                        g1t.Read(KTGZip.Decompress(BinFile.FileList[ii]));
                                         for (int iii = 0; iii < g1t.Textures.Count; iii++)
                                         {
                                             treeView1.Nodes[NodeIndexBin].Nodes[i].Nodes[ii].Nodes.Add(iii.ToString() + ".dds");
@@ -584,63 +630,65 @@ namespace G1Tool
             */
         }
 
-        private void SaveBin_Click(object sender, EventArgs e)
+        private void Save_Click(object sender, EventArgs e)
         {
-            var fileList = new List<byte[]>();
-            var ktGZIP = new KTGZip();
-            for (int i = 0; i < BinFileList[treeView1.SelectedNode.Index].Count; i++)    // For Each G1T file of the selected bin file
+            if (FormatIndex == NodeIndexBin && treeView1.Nodes.ContainsKey("BIN"))
             {
-                fileList.Add(ktGZIP.Compress(BinFileList[treeView1.SelectedNode.Index][i].Write()));
-            }
-            BinFile.Write(fileList, FilePathBinGZList[treeView1.SelectedNode.Index]);
-        }
-
-        private void SaveBinAs_Click(object sender, EventArgs e)
-        {
-
-            using (var savedialog = new SaveFileDialog())
-            {
-                savedialog.DefaultExt = ".bin";
-                savedialog.Filter = "Koei Tecmo Binary Archive|*.bin";
-
-                if (savedialog.ShowDialog() == DialogResult.OK)
+                var fileList = new List<byte[]>();
+                for (int i = 0; i < BinFileList[treeView1.SelectedNode.Index].Count; i++)    // For Each G1T file of the selected bin file
                 {
-                    var fileList = new List<byte[]>();
-                    var ktGZIP = new KTGZip();
-                    for (int i = 0; i < BinFileList[treeView1.SelectedNode.Index].Count; i++)    // For Each G1T file of the selected bin file
-                    {
-                        fileList.Add(ktGZIP.Compress(BinFileList[treeView1.SelectedNode.Index][i].Write()));
-                    }
-                    BinFile.Write(fileList, savedialog.FileName);
+                    fileList.Add(KTGZip.Compress(BinFileList[treeView1.SelectedNode.Index][i].Write()));
                 }
+                BinFile.Write(fileList, FilePathBinGZList[treeView1.SelectedNode.Index]);
             }
-        }
-        private void SaveG1T_Click(object sender, EventArgs e)
-        {
-            using (var fs = new FileStream(FilePathG1TList[treeView1.SelectedNode.Index], FileMode.Create))
+            if (FormatIndex == NodeIndexG1T && treeView1.Nodes.ContainsKey("G1T"))
             {
-                var g1tFile = G1TFileList[treeView1.SelectedNode.Index].Write();
-                fs.Write(g1tFile, 0x0, g1tFile.Length);
-            }
-        }
-        private void SaveG1TAs_Click(object sender, EventArgs e)
-        {
-            using (var savedialog = new SaveFileDialog())
-            {
-                savedialog.DefaultExt = ".g1t";
-                savedialog.Filter = "Koei Tecmo Texture Archive|*.g1t";
-
-                if (savedialog.ShowDialog() == DialogResult.OK)
+                using (var fs = new FileStream(FilePathG1TList[treeView1.SelectedNode.Index], FileMode.Create))
                 {
-                    using (var fs = new FileStream(savedialog.FileName, FileMode.Create))
-                    {
-                        var g1tFile = G1TFileList[treeView1.SelectedNode.Index].Write();
-                        fs.Write(g1tFile, 0x0, g1tFile.Length);
-                    }
+                    var g1tFile = G1TFileList[treeView1.SelectedNode.Index].Write();
+                    fs.Write(g1tFile, 0x0, g1tFile.Length);
                 }
             }
         }
 
+        private void SaveAs_Click(object sender, EventArgs e)
+        {
+            if (FormatIndex == NodeIndexBin && treeView1.Nodes.ContainsKey("BIN"))
+            {
+                using (var savedialog = new SaveFileDialog())
+                {
+                    savedialog.DefaultExt = ".bin";
+                    savedialog.Filter = "Koei Tecmo Binary Archive|*.bin";
+
+                    if (savedialog.ShowDialog() == DialogResult.OK)
+                    {
+                        var fileList = new List<byte[]>();
+                        for (int i = 0; i < BinFileList[treeView1.SelectedNode.Index].Count; i++)    // For Each G1T file of the selected bin file
+                        {
+                            fileList.Add(KTGZip.Compress(BinFileList[treeView1.SelectedNode.Index][i].Write()));
+                        }
+                        BinFile.Write(fileList, savedialog.FileName);
+                    }
+                }
+            }
+            if (FormatIndex == NodeIndexG1T && treeView1.Nodes.ContainsKey("G1T"))
+            {
+                using (var savedialog = new SaveFileDialog())
+                {
+                    savedialog.DefaultExt = ".g1t";
+                    savedialog.Filter = "Koei Tecmo Texture Archive|*.g1t";
+
+                    if (savedialog.ShowDialog() == DialogResult.OK)
+                    {
+                        using (var fs = new FileStream(savedialog.FileName, FileMode.Create))
+                        {
+                            var g1tFile = G1TFileList[treeView1.SelectedNode.Index].Write();
+                            fs.Write(g1tFile, 0x0, g1tFile.Length);
+                        }
+                    }
+                }
+            }
+        }
         private void NumericUpDownMipMap_ValueChanged(object sender, EventArgs e)
         {
             /*

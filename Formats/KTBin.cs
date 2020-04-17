@@ -6,7 +6,7 @@ namespace G1Tool.Formats
     public class KTBin
     {
         public List<byte[]> FileList { get; set; }
-        public void ReadKTBin(string path)
+        public void Read(string path)
         {
             using (FileStream memoryStream = new FileStream(path, FileMode.Open))
             using (BinaryReader reader = new BinaryReader(memoryStream))

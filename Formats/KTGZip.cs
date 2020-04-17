@@ -9,7 +9,7 @@ namespace G1Tool.Formats
 {
     class KTGZip
     {
-        public byte[] Decompress(byte[] file)
+        public static byte[] Decompress(byte[] file)
         {
             using (EndianBinaryReader r = new EndianBinaryReader(new MemoryStream(file), Endianness.Little))
             {
@@ -52,7 +52,7 @@ namespace G1Tool.Formats
                 return output;
             }
         }
-        public byte[] Compress(byte[] file)
+        public static byte[] Compress(byte[] file)
         {
             int splitSize = 0x10000;
             int partitionCount = ((file.Length - 1) / 0x10000) + 1;
