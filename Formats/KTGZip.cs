@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Windows.Forms;
 using G1Tool.IO;
+using System;
+using System.Linq;
 
 namespace G1Tool.Formats
 {
@@ -57,22 +58,15 @@ namespace G1Tool.Formats
             int partitionCount = ((file.Length - 1) / 0x10000) + 1;
 
             var partitionList = new List<byte[]>();
-            for (int i = 0; i < partitionCount; i++)
+            using (var reader = new BinaryReader(new MemoryStream(file)))
             {
-                using (var ms = new MemoryStream())
+                for (int i = 0; i < partitionCount; i++)
                 {
-                    using (DeflateStream deflate = new DeflateStream(ms, CompressionMode.Compress))
-                    {
-                        if (splitSize <= file.Length - i * splitSize)
-                            deflate.Write(file, i * splitSize, splitSize);
-                        if (splitSize >= file.Length - i * splitSize)
-                            deflate.Write(file, i * splitSize, file.Length - i * splitSize);
-                    }
-                    partitionList.Add(ms.ToArray());
+                        byte[] partition = ZLib.Compress(reader.ReadBytes(splitSize));
+                        partitionList.Add(partition);
                 }
 
             }
-
             using (var ms = new MemoryStream())
             using (var br = new BinaryWriter(ms))
             {
@@ -93,9 +87,30 @@ namespace G1Tool.Formats
                     br.BaseStream.Write(partitionList[i], 0x0, partitionList[i].Length);
                     currentOffset = br.BaseStream.Position;
                 }
+                ms.Capacity = (int)br.BaseStream.Position;   // MS doubles capacity every time buffer is exceeded
                 return ms.GetBuffer();
             }
         }
+    }
+    // Credits: https://github.com/KillzXGaming/Switch-Toolbox
+    public class ZLib
+    {
+        public static byte[] Compress(byte[] b, uint Position = 0)
+        {
+            var output = new MemoryStream();
+            output.Write(new byte[] { 0x78, 0xDA }, 0, 2);
+
+            using (var zipStream = new DeflateStream(output, CompressionMode.Compress, true))
+                zipStream.Write(b, 0, b.Length);
+
+            //Add this as it weirdly prevents the data getting corrupted
+            //From https://github.com/IcySon55/Kuriimu/blob/f670c2719affc1eaef8b4c40e40985881247acc7/src/Kontract/Compression/ZLib.cs
+            var adler = b.Aggregate(Tuple.Create(1, 0), (x, n) => Tuple.Create((x.Item1 + n) % 65521, (x.Item1 + x.Item2 + n) % 65521));
+            output.Write(new[] { (byte)(adler.Item2 >> 8), (byte)adler.Item2, (byte)(adler.Item1 >> 8), (byte)adler.Item1 }, 0, 4);
+            return output.ToArray();
+        }
+
+
     }
 
 }
