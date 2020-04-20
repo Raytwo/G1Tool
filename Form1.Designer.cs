@@ -31,8 +31,7 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.textureListBox = new System.Windows.Forms.ListBox();
+            this.openFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsGroupBox = new System.Windows.Forms.GroupBox();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.dimensionsGroupBox = new System.Windows.Forms.GroupBox();
@@ -46,9 +45,14 @@
             this.mipmapCountLabel = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.checkBoxExHeader = new System.Windows.Forms.CheckBox();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.treeView1 = new System.Windows.Forms.TreeView();
+            this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.previewGroupBox = new System.Windows.Forms.GroupBox();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.button1 = new System.Windows.Forms.Button();
+            this.panel2 = new System.Windows.Forms.Panel();
             this.menuStrip1.SuspendLayout();
             this.settingsGroupBox.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
@@ -56,9 +60,11 @@
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMipMap)).BeginInit();
             this.groupBox1.SuspendLayout();
+            this.groupBox3.SuspendLayout();
             this.previewGroupBox.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -67,7 +73,7 @@
             this.fileToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(845, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(934, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -75,7 +81,7 @@
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openToolStripMenuItem,
-            this.saveToolStripMenuItem});
+            this.openFolderToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
@@ -83,33 +89,22 @@
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.openToolStripMenuItem.Text = "Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.OpenToolStripMenuItem_Click);
             // 
-            // saveToolStripMenuItem
+            // openFolderToolStripMenuItem
             // 
-            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
-            this.saveToolStripMenuItem.Text = "Save";
-            this.saveToolStripMenuItem.Click += new System.EventHandler(this.SaveToolStripMenuItem_Click);
-            // 
-            // textureListBox
-            // 
-            this.textureListBox.Dock = System.Windows.Forms.DockStyle.Left;
-            this.textureListBox.FormattingEnabled = true;
-            this.textureListBox.Location = new System.Drawing.Point(0, 24);
-            this.textureListBox.Name = "textureListBox";
-            this.textureListBox.Size = new System.Drawing.Size(120, 538);
-            this.textureListBox.TabIndex = 1;
-            this.textureListBox.SelectedIndexChanged += new System.EventHandler(this.TextureListBox_SelectedIndexChanged);
-            this.textureListBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TextureListBox_MouseDown);
+            this.openFolderToolStripMenuItem.Name = "openFolderToolStripMenuItem";
+            this.openFolderToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openFolderToolStripMenuItem.Text = "Open Folder";
+            this.openFolderToolStripMenuItem.Click += new System.EventHandler(this.openFolderToolStripMenuItem_Click);
             // 
             // settingsGroupBox
             // 
             this.settingsGroupBox.Controls.Add(this.flowLayoutPanel1);
             this.settingsGroupBox.Dock = System.Windows.Forms.DockStyle.Right;
-            this.settingsGroupBox.Location = new System.Drawing.Point(645, 24);
+            this.settingsGroupBox.Location = new System.Drawing.Point(734, 24);
             this.settingsGroupBox.Name = "settingsGroupBox";
             this.settingsGroupBox.Size = new System.Drawing.Size(200, 538);
             this.settingsGroupBox.TabIndex = 2;
@@ -255,47 +250,94 @@
             this.checkBoxExHeader.Text = "Uses Extra Header";
             this.checkBoxExHeader.UseVisualStyleBackColor = true;
             // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.treeView1);
+            this.groupBox3.Dock = System.Windows.Forms.DockStyle.Left;
+            this.groupBox3.Location = new System.Drawing.Point(0, 24);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(152, 538);
+            this.groupBox3.TabIndex = 5;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Files";
+            // 
+            // treeView1
+            // 
+            this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeView1.Location = new System.Drawing.Point(3, 16);
+            this.treeView1.Name = "treeView1";
+            this.treeView1.Size = new System.Drawing.Size(146, 519);
+            this.treeView1.TabIndex = 2;
+            this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
+            this.treeView1.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseClick);
+            // 
+            // openFileDialog
+            // 
+            this.openFileDialog.FileName = "openFileDialog";
+            // 
             // previewGroupBox
             // 
-            this.previewGroupBox.AutoSize = true;
+            this.previewGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.previewGroupBox.Controls.Add(this.panel1);
-            this.previewGroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.previewGroupBox.Location = new System.Drawing.Point(120, 24);
+            this.previewGroupBox.Location = new System.Drawing.Point(6, 36);
             this.previewGroupBox.Name = "previewGroupBox";
-            this.previewGroupBox.Size = new System.Drawing.Size(525, 538);
-            this.previewGroupBox.TabIndex = 3;
+            this.previewGroupBox.Size = new System.Drawing.Size(570, 499);
+            this.previewGroupBox.TabIndex = 7;
             this.previewGroupBox.TabStop = false;
             this.previewGroupBox.Text = "Preview";
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.pictureBox1.Location = new System.Drawing.Point(0, 0);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(519, 519);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            this.pictureBox1.TabIndex = 1;
-            this.pictureBox1.TabStop = false;
             // 
             // panel1
             // 
             this.panel1.AutoScroll = true;
-            this.panel1.AutoSize = true;
             this.panel1.Controls.Add(this.pictureBox1);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(3, 16);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(519, 519);
+            this.panel1.Size = new System.Drawing.Size(564, 480);
             this.panel1.TabIndex = 2;
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.BackColor = System.Drawing.SystemColors.Control;
+            this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.pictureBox1.Location = new System.Drawing.Point(3, 6);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(20, 20);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.pictureBox1.TabIndex = 1;
+            this.pictureBox1.TabStop = false;
+            // 
+            // button1
+            // 
+            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button1.Location = new System.Drawing.Point(501, 7);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 7;
+            this.button1.Text = "BG Color";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.previewGroupBox);
+            this.panel2.Controls.Add(this.button1);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel2.Location = new System.Drawing.Point(152, 24);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(582, 538);
+            this.panel2.TabIndex = 8;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(845, 562);
-            this.Controls.Add(this.previewGroupBox);
+            this.ClientSize = new System.Drawing.Size(934, 562);
+            this.Controls.Add(this.panel2);
+            this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.settingsGroupBox);
-            this.Controls.Add(this.textureListBox);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
@@ -311,11 +353,12 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMipMap)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.groupBox3.ResumeLayout(false);
             this.previewGroupBox.ResumeLayout(false);
-            this.previewGroupBox.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.panel2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -326,16 +369,13 @@
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
-        private System.Windows.Forms.ListBox textureListBox;
         private System.Windows.Forms.GroupBox settingsGroupBox;
-        private System.Windows.Forms.GroupBox previewGroupBox;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
         private System.Windows.Forms.GroupBox dimensionsGroupBox;
         private System.Windows.Forms.Label heightLabel;
         private System.Windows.Forms.Label widthLabel;
-        private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openFolderToolStripMenuItem;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.NumericUpDown numericUpDownMipMap;
         private System.Windows.Forms.Label mipmapCountLabel;
@@ -343,7 +383,14 @@
         private System.Windows.Forms.CheckBox checkBoxNormalMap;
         private System.Windows.Forms.ComboBox comboBoxCompression;
         private System.Windows.Forms.Label labelCompression;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.TreeView treeView1;
+        private System.Windows.Forms.OpenFileDialog openFileDialog;
+        private System.Windows.Forms.GroupBox previewGroupBox;
         private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Panel panel2;
     }
 }
 

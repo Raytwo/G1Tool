@@ -6,6 +6,7 @@ using SFGraphics.GLObjects.Textures;
 using SFGraphics.GLObjects.Textures.TextureFormats;
 using OpenTK.Graphics.OpenGL;
 using System.Windows.Media.Imaging;
+using System.IO;
 
 namespace G1Tool.Formats
 {
@@ -30,144 +31,127 @@ namespace G1Tool.Formats
             Textures = new List<G1Texture>();
         }
 
-        public void Read(string filename)
+        public void Read(byte[] file)
         {
-            Read(new EndianBinaryReader(filename, Endianness.Little));
-        }
-
-        public void Read(EndianBinaryReader r)
-        {
-            if (r.ReadUInt32() != 0x47315447)
+            using (var r = new EndianBinaryReader(new MemoryStream(file), Endianness.Little))
             {
-                MessageBox.Show("This file is not a valid Koei Tecmo G1T.", "Invalid file");
-                return;
-            }
-
-            Version = r.ReadUInt32();
-
-            if (Version != 0x30303630 && Version != 0x30303631 && Version != 0x30303632)
-            {
-                MessageBox.Show("This version of the G1T format is unsupported.", "Unsupported version");
-                return;
-            }
-
-            FileSize = r.ReadUInt32();
-
-            if (FileSize != r.Length)
-            {
-                MessageBox.Show("There is a mismatch between the reported file size and the actual one.", "File size mismatch");
-                return;
-            }
-
-            uint offsetTableAddress = r.ReadUInt32();
-
-            uint texCount = r.ReadUInt32();
-
-            UnkValue1 = r.ReadUInt32(); //0x10 or 0xA, no idea what the difference is
-            uint unk2 = r.ReadUInt32();
-
-            uint[] normalMapFlags = r.ReadUInt32s((int)texCount);
-            uint[] offsetTable = r.ReadUInt32s((int)texCount);
-
-            for (int i = 0; i < texCount; i++)
-            {
-                G1Texture texture = new G1Texture();
-
-                r.SeekBegin(offsetTableAddress + offsetTable[i]);
-
-                texture.NormalMapFlags = normalMapFlags[i];
-                texture.Read(r);
-                Textures.Add(texture);
-            }
-        }
-
-        public void Write(string filename)
-        {
-            Write(new EndianBinaryWriter(filename, Endianness.Little));
-        }
-
-        public void Write(EndianBinaryWriter w)
-        {
-            w.Write("GT1G", StringBinaryFormat.FixedLength, 4); // Magic
-            w.Write(Version); //Version
-            long filesizepos = w.Position;
-            w.WritePadding(8); // Skip filesize and table address for now
-            w.Write((UInt32)TextureCount);
-            w.Write(UnkValue1);
-            w.WritePadding(4);
-
-            foreach (G1Texture texture in Textures)
-                if (texture.NormalMapFlags == 3)
-                    w.Write((UInt32)3);
-                else
-                    w.Write((UInt32)0);
-
-            long offsettablepos = w.Position;
-            w.WritePadding((int)(4 * TextureCount)); // Skip offset table for now
-
-            List<UInt32> offsets = new List<uint>();
-
-            foreach (G1Texture texture in Textures)
-            {
-                offsets.Add((uint)w.Position - (uint)offsettablepos);
-
-                w.Write((byte)(texture.MipMapCount << 4));
-                w.Write(texture.compression_format);
-
-                int dimensions = (int)Math.Log(texture.Width, 2) | (int)Math.Log(texture.Height, 2) << 4;
-                w.Write((short)dimensions);
-
-                if(texture.UsesExtraHeader)
+                if (r.ReadUInt32() != 0x47315447)
                 {
-                    w.Write(texture.Flags);
-                    w.Write((uint)0xC);
-                    w.WritePadding(4);
-                    w.Write(texture.ExtraHeaderUnk);
-                }
-                else
-                {
-                    w.Write(texture.Flags);
+                    MessageBox.Show("This file is not a valid Koei Tecmo G1T.", "Invalid file");
+                    return;
                 }
 
-                texture.Mipmap.Bind();
+                Version = r.ReadUInt32();
 
-                int level = 0;
-
-                for(level = 0; level < texture.MipMapCount; level++)
+                if (Version != 0x30303630 && Version != 0x30303631 && Version != 0x30303632)
                 {
-                    int imageSize;
-                    if (TextureFormatTools.IsCompressed(texture.pixelInternalFormat))
-                        GL.GetTexLevelParameter(TextureTarget.Texture2D, level, GetTextureParameter.TextureCompressedImageSize, out imageSize);
+                    MessageBox.Show("This version of the G1T format is unsupported.", "Unsupported version");
+                    return;
+                }
+
+                FileSize = r.ReadUInt32();
+
+                uint offsetTableAddress = r.ReadUInt32();
+
+                uint texCount = r.ReadUInt32();
+
+                UnkValue1 = r.ReadUInt32(); //0x10 or 0xA, no idea what the difference is
+                uint unk2 = r.ReadUInt32();
+
+                uint[] normalMapFlags = r.ReadUInt32s((int)texCount);
+                uint[] offsetTable = r.ReadUInt32s((int)texCount);
+
+                for (int i = 0; i < texCount; i++)
+                {
+                    G1Texture texture = new G1Texture();
+                    r.SeekBegin(offsetTableAddress + offsetTable[i]);
+
+                    texture.NormalMapFlags = normalMapFlags[i];
+                    texture.Read(r);
+                    Textures.Add(texture);
+                }
+            }
+        }
+        public byte[] Write()
+        {
+            using (var ms = new MemoryStream())
+            using (var w = new EndianBinaryWriter(ms, Endianness.Little))
+            {
+                w.Write("GT1G", StringBinaryFormat.FixedLength, 4); // Magic
+                w.Write(Version); //Version
+                long filesizepos = w.Position;
+                w.WritePadding(8); // Skip filesize and table address for now
+                w.Write((UInt32)TextureCount);
+                w.Write(UnkValue1);
+                w.WritePadding(4);
+
+                foreach (G1Texture texture in Textures)
+                    if (texture.NormalMapFlags == 3)
+                        w.Write((UInt32)3);
                     else
-                        imageSize = texture.Mipmap.GetImageData(0).Length;
+                        w.Write((UInt32)0);
 
-                    byte[] mipmap = new byte[imageSize];
+                long offsettablepos = w.Position;
+                w.WritePadding((int)(4 * TextureCount)); // Skip offset table for now
 
-                    if(TextureFormatTools.IsCompressed(texture.pixelInternalFormat))
-                        GL.GetCompressedTexImage(TextureTarget.Texture2D, level, mipmap);
+                List<UInt32> offsets = new List<uint>();
+
+                foreach (G1Texture texture in Textures)
+                {
+                    offsets.Add((uint)w.Position - (uint)offsettablepos);
+
+                    w.Write((byte)(texture.MipMapCount << 4));
+                    w.Write(texture.compression_format);
+
+                    int dimensions = (int)Math.Log(texture.Width, 2) | (int)Math.Log(texture.Height, 2) << 4;
+                    w.Write((short)dimensions);
+
+                    if (texture.UsesExtraHeader)
+                    {
+                        w.Write(texture.Flags);
+                        w.Write((uint)0xC);
+                        w.WritePadding(4);
+                        w.Write(texture.ExtraHeaderUnk);
+                    }
                     else
                     {
-                        GL.GetTexImage(TextureTarget.Texture2D, level, texture.pixelFormat, texture.pixelType, mipmap);
-                        //mipmap = texture.Mipmap.GetImageData(0);
+                        w.Write(texture.Flags);
                     }
 
-                    w.Write(mipmap);
+                    texture.Mipmap.Bind();
+
+                    int level = 0;
+
+                    for (level = 0; level < texture.MipMapCount; level++)
+                    {
+                        int imageSize;
+                        if (TextureFormatTools.IsCompressed(texture.pixelInternalFormat))
+                            GL.GetTexLevelParameter(TextureTarget.Texture2D, level, GetTextureParameter.TextureCompressedImageSize, out imageSize);
+                        else
+                            imageSize = texture.Mipmap.GetImageData(0).Length;
+
+                        byte[] mipmap = new byte[imageSize];
+
+                        if (TextureFormatTools.IsCompressed(texture.pixelInternalFormat))
+                            GL.GetCompressedTexImage(TextureTarget.Texture2D, level, mipmap);
+                        else
+                        {
+                            GL.GetTexImage(TextureTarget.Texture2D, level, texture.pixelFormat, texture.pixelType, mipmap);
+                            //mipmap = texture.Mipmap.GetImageData(0);
+                        }
+
+                        w.Write(mipmap);
+                    }
                 }
+
+                w.SeekBegin(filesizepos);
+                w.Write((uint)w.Length);
+                w.Write((uint)offsettablepos);
+                w.SeekBegin(offsettablepos);
+                foreach (UInt32 offset in offsets)
+                    w.Write(offset);
+                return ms.GetBuffer();
             }
-
-            w.SeekBegin(filesizepos);
-            w.Write((uint)w.Length);
-            w.Write((uint)offsettablepos);
-            w.SeekBegin(offsettablepos);
-            foreach (UInt32 offset in offsets)
-                w.Write(offset);
-
-            w.Close();
-        }
-
-        public void AddTexture(G1Texture texture)
-        {
-            Textures.Add(texture);
         }
     }
 
@@ -241,11 +225,7 @@ namespace G1Tool.Formats
             {
                 Mipmap.LoadImageData(Width, Height, r.ReadBytes(TextureSize), new TextureFormatUncompressed(pixelInternalFormat, pixelFormat, pixelType));
             }
-            
-            
-
         }
-
         public void Replace(DDS newTex)
         {
             Width = newTex.Width;
